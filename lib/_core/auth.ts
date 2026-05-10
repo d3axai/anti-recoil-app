@@ -1,6 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 import { SESSION_TOKEN_KEY, USER_INFO_KEY } from "@/constants/oauth";
+import { encryptionService } from "@/lib/encryption-service";
 
 export type User = {
   id: number;
@@ -85,7 +86,17 @@ export async function getUserInfo(): Promise<User | null> {
       console.log("[Auth] No user info found");
       return null;
     }
-    const user = JSON.parse(info);
+    
+    let decryptedInfo = info;
+    if (Platform.OS !== "web") {
+      try {
+        decryptedInfo = await encryptionService.decrypt(info);
+      } catch (e) {
+        console.error("[Auth] Decryption failed, might be old data", e);
+      }
+    }
+    
+    const user = JSON.parse(decryptedInfo);
     console.log("[Auth] User info retrieved:", user);
     return user;
   } catch (error) {
@@ -105,9 +116,10 @@ export async function setUserInfo(user: User): Promise<void> {
       return;
     }
 
-    // Use SecureStore for native
-    await SecureStore.setItemAsync(USER_INFO_KEY, JSON.stringify(user));
-    console.log("[Auth] User info stored in SecureStore successfully");
+    // Use SecureStore for native with multi-layered encryption
+    const encryptedInfo = await encryptionService.encrypt(JSON.stringify(user));
+    await SecureStore.setItemAsync(USER_INFO_KEY, encryptedInfo);
+    console.log("[Auth] User info stored in SecureStore with encryption successfully");
   } catch (error) {
     console.error("[Auth] Failed to set user info:", error);
   }

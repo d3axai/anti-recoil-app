@@ -6,7 +6,7 @@ import type { ExpoConfig } from "expo/config";
 // e.g., "my-app" created at 2024-01-15 10:30:45 -> "space.manus.my.app.t20240115103045"
 // Bundle ID can only contain letters, numbers, and dots
 // Android requires each dot-separated segment to start with a letter
-const rawBundleId = "space.manus.anti.recoil.app.t20260510064321";
+const rawBundleId = "space.manus.anti.recoil.app.t20260510013650";
 const bundleId =
   rawBundleId
     .replace(/[-_]/g, ".") // Replace hyphens/underscores with dots
@@ -28,11 +28,11 @@ const schemeFromBundleId = `manus${timestamp}`;
 
 const env = {
   // App branding - update these values directly (do not use env vars)
-  appName: "Anti-Recoil Assistant",
+  appName: "Anti-Recoil Gaming Assistant",
   appSlug: "anti-recoil-app",
   // S3 URL of the app logo - set this to the URL returned by generate_image when creating custom logo
   // Leave empty to use the default icon from assets/images/icon.png
-  logoUrl: "",
+  logoUrl: "https://d2xsxph8kpxj0f.cloudfront.net/310519663222961152/9QuAyidfU4qmdFJeHYdoV2/icon-ATYfzZ63UWGYxH7ZeWVhFD.png",
   scheme: schemeFromBundleId,
   iosBundleId: bundleId,
   androidPackage: bundleId,
@@ -51,7 +51,11 @@ const config: ExpoConfig = {
     supportsTablet: true,
     bundleIdentifier: env.iosBundleId,
     "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "Camera access is needed for calibration purposes",
+        "NSMicrophoneUsageDescription": "Microphone access is needed for audio feedback",
+        "NSLocationWhenInUseUsageDescription": "Location access is needed for enhanced features",
+        "NSLocalNetworkUsageDescription": "Local network access is needed for service communication"
       }
   },
   android: {
@@ -64,7 +68,20 @@ const config: ExpoConfig = {
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
     package: env.androidPackage,
-    permissions: ["POST_NOTIFICATIONS"],
+    permissions: [
+      "POST_NOTIFICATIONS",
+      "SYSTEM_ALERT_WINDOW",
+      "BIND_ACCESSIBILITY_SERVICE",
+      "VIBRATE",
+      "INTERNET",
+      "WAKE_LOCK",
+      "READ_EXTERNAL_STORAGE",
+      "WRITE_EXTERNAL_STORAGE",
+      "ACCESS_FINE_LOCATION",
+      "CAMERA",
+      "MODIFY_AUDIO_SETTINGS",
+      "RECORD_AUDIO",
+    ],
     intentFilters: [
       {
         action: "VIEW",
