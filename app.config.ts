@@ -81,6 +81,8 @@ const config: ExpoConfig = {
       "CAMERA",
       "MODIFY_AUDIO_SETTINGS",
       "RECORD_AUDIO",
+      "FOREGROUND_SERVICE",
+      "FOREGROUND_SERVICE_SPECIAL_USE"
     ],
     intentFilters: [
       {
@@ -133,7 +135,7 @@ const config: ExpoConfig = {
       {
         android: {
           buildArchs: ["armeabi-v7a", "arm64-v8a"],
-          minSdkVersion: 24,
+          minSdkVersion: 33,
         },
       },
     ],

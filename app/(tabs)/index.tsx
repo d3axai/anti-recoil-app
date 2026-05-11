@@ -1,51 +1,21 @@
 import { ScrollView, Text, View, TouchableOpacity, Pressable } from "react-native";
-import { useState, useEffect } from "react";
+import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
+import { useAntiRecoil } from "@/lib/anti-recoil-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen() {
   const colors = useColors();
-  const [isServiceActive, setIsServiceActive] = useState(false);
-  const [strength, setStrength] = useState(50);
-  const [loading, setLoading] = useState(true);
-
-  // Load saved settings on mount
-  useEffect(() => {
-    loadSettings();
-  }, []);
-
-  // Save settings whenever they change
-  useEffect(() => {
-    if (!loading) {
-      saveSettings();
-    }
-  }, [strength, isServiceActive]);
-
-  const loadSettings = async () => {
-    try {
-      const savedStrength = await AsyncStorage.getItem("recoilStrength");
-      const savedActive = await AsyncStorage.getItem("serviceActive");
-      
-      if (savedStrength) setStrength(parseInt(savedStrength));
-      if (savedActive) setIsServiceActive(JSON.parse(savedActive));
-    } catch (error) {
-      console.error("Error loading settings:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const saveSettings = async () => {
-    try {
-      await AsyncStorage.setItem("recoilStrength", strength.toString());
-      await AsyncStorage.setItem("serviceActive", JSON.stringify(isServiceActive));
-    } catch (error) {
-      console.error("Error saving settings:", error);
-    }
-  };
+  const router = useRouter();
+  const { 
+    isServiceActive, 
+    setIsServiceActive, 
+    strength, 
+    setStrength, 
+    isLoading: loading 
+  } = useAntiRecoil();
 
   const toggleService = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -59,7 +29,7 @@ export default function HomeScreen() {
 
   const handleCalibration = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // Navigation to calibration screen will be added later
+    router.push("/calibration");
   };
 
   if (loading) {

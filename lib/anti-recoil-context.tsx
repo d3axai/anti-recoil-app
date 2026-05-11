@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AccessibilityService } from "./accessibility-service";
 
 interface AntiRecoilContextType {
   isServiceActive: boolean;
@@ -63,6 +64,11 @@ export function AntiRecoilProvider({ children }: { children: ReactNode }) {
     setIsServiceActive(active);
     try {
       await AsyncStorage.setItem("serviceActive", JSON.stringify(active));
+      if (active) {
+        await AccessibilityService.startService(strength, calibrationZone);
+      } else {
+        await AccessibilityService.stopService();
+      }
     } catch (error) {
       console.error("Error saving service status:", error);
     }
